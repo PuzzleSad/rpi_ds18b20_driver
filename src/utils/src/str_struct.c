@@ -1,5 +1,5 @@
 #include "../str_utils.h"
-#include "usefuldefines.h"
+#include "../usefuldefines.h"
 
 #include <linux/types.h>
 #include <stdlib.h>
@@ -44,4 +44,15 @@ void su_stringarr_fini( string_array_t* sa ){
         }
 
         free( sa->strarr );
+}
+
+void su_stringarr_printall( string_array_t* sa ){
+        if( sa == NULL ){
+                return;
+        }
+
+        for( int i = 0; i < sa->count; i++){
+                printf("%s\n", sa->strarr[i]);
+        }
+
 }
