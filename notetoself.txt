@@ -1,0 +1,78 @@
+Note on "strings" stored as int types in a little endian byte ordered system
+
+if you print the bytes of, say, a 4byte int
+the FIRST byte you print is the least significant
+i.e. the least significant byte is stored in the smallest address
+
+The implications are as follows
+lets say we have a magical decimal computer memory system that can store 10 states
+0-9
+
+if we have a number 12345 stored, each "byte" being a number digit
+then if we read those bytes out in order from lowest address to highest
+we get
+54321
+the least significant, "5", is printed first
+
+
+The reason this is written is for the ds18b20 ID value
+
+the function I have prints: 28 1f aa 95 f0 1 3c db 0 0     (the two extra zeroes is because I set the for loop to run 10 times)
+
+the datasheet of the DS18B20 states
+
+|   8-BIT CRC CODE    |    48-BIT SERIAL NUMBER    |     8-BIT FAMILY CODE  |
+|   MSB        LSB    |    MSB              LSB    |     MSB           LSB  |
+
+This would then mean that, if we print out the bytes one by one, we essentially print it out
+backwards.
+
+A much more definite proof is to calculate the CRC via the Dallas/National Semiconductor specification
+Please see the code below.
+if we simply convert the string to a number "0x281faa95f0013c"
+the calculated CRC is incorrect, yielding 105, which is not the 0xdb (219) value
+writing the hex bytes "back to front" yields a crc result of 219, which does match
+
+
+
+
+References:
+https://cdn.sparkfun.com/datasheets/Sensors/Temp/DS18B20.pdf
+https://www.analog.com/en/technical-articles/understanding-and-using-cyclic-redundancy-checks-with-maxim-1wire-and-ibutton-products.html
+https://forum.arduino.cc/t/help-coding-crc-calulation-for-ds18b20-temperature-sensor/535661
+
+
+
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t crc8( uint8_t *addr, uint8_t len);
+
+int main() {
+    //uint64_t num = 0x281faa95f0013c;
+    uint64_t num = 0x3c01f095aa1f28;
+    
+    printf("crc: %i\n", crc8((uint8_t*)&num, 7));
+
+    return 0;
+}
+
+
+
+uint8_t crc8( uint8_t *addr, uint8_t len)
+{
+	uint8_t crc = 0;
+	
+	while (len--) {
+		uint8_t inbyte = *addr++;
+		for (uint8_t i = 8; i; i--) {
+			uint8_t mix = (crc ^ inbyte) & 0x01;
+			crc >>= 1;
+			if (mix) crc ^= 0x8C;
+			inbyte >>= 1;
+		}
+	}
+	return crc;
+}

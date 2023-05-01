@@ -1,0 +1,6 @@
+(char**)realloc( sa->strarr, sa->count * sizeof(char*) );
+was previously
+(char**)realloc( sa->strarr, sa->count );
+        Potentially an extremely dangerous bug due to malloc allocating pages of 
+        memory. The program does not yield a segfault when run due to pages allocated on new alloc.
+        Caught with valgrind.

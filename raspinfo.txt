@@ -1,0 +1,46 @@
+System Information
+------------------
+
+Raspberry Pi 3 Model B Rev 1.2
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+
+Raspberry Pi reference 2022-09-06
+Generated using pi-gen, https://github.com/RPi-Distro/pi-gen, 827affcc11aaf7aa577d15daf02fb40b64392380, stage2
+
+Linux homepi 5.15.76-v8+ #1597 SMP PREEMPT Fri Nov 4 12:16:41 GMT 2022 aarch64 GNU/Linux
+Revision	: a02082
+Serial		: 000000007f247bb9
+Model		: Raspberry Pi 3 Model B Rev 1.2
+Throttled flag  : throttled=0x50000
+Camera          : supported=0 detected=0, libcamera interfaces=0
+
+Videocore information
+---------------------
+
+Oct 26 2022 11:10:35 
+Copyright (c) 2012 Broadcom
+version c72ad6b26ff40c91ef776b847436094ee63fabee (clean) (release) (start)
+
+alloc failures:     0
+compactions:        0
+legacy block fails: 0
+
+Filesystem information
+----------------------
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/root       30236148 4328076  24644900  15% /
+devtmpfs          332736       0    332736   0% /dev
+tmpfs             465728       0    465728   0% /dev/shm
+tmpfs             186292    2924    183368   2% /run
+tmpfs               5120       4      5116   1% /run/lock
+/dev/mmcblk0p1    261108   31374    229734  13% /boot
+tmpfs              93144       0     93144   0% /run/user/1000
+
+Filename				Type		Size		Used		Priority
+/var/swap                               file		102396		768		-2
+
+Package version information
+---------------------------
