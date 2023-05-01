@@ -49,12 +49,20 @@ void ds_test(){
         ds18b20_t ds;
         init_ds18b20( &ds, "/sys/bus/w1/devices/28-3c01f095aa1f" );
 
-        printf("Path: %s\n", ds.path );
-        printf("Serial: %lx\n", ds.serial_number );
+        // printf("Path: %s\n", ds.path );
+        // printf("Serial: %lx\n", ds.serial_number );
 
+        
+
+        ds18b20_collection_t ds_collect;
+        init_ds18b20_collection( &ds_collect );
+
+        ds_collection_append( &ds_collect, &ds );
+        ds_collection_printall( &ds_collect );
 
         fini_ds18b20( &ds );
-
+        fini_ds18b20_collection( &ds_collect );
+        
 }
 
 void strarr_test(){

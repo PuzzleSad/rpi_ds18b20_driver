@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 //-------------MACROS---------------
 #ifdef VERIFY_ON_EVERY_READ
@@ -27,9 +28,9 @@ do{\
 //------MAGIC NUMBERS--------------
 #define DS18B20_SERIAL_MASK 0x00ffffffffffff00
 //                            AAxxxxxxxxxxxx28
-//      AA is CRC
-//      xx... is 48bit (6 byte) serial num
-//      28 is family code
+//      AA is a CRC
+//      xx... is a 48bit (6 byte) serial num
+//      28 is a family code
 //---------------------------------
 
 
@@ -39,7 +40,7 @@ do{\
 
 int32_t ds_get_reading( ds18b20_collection_t* ds_collect, int sensor_num ){
 
-
+        
 
 
         return 0;
@@ -89,6 +90,24 @@ uint64_t ds_get_serial( const char* path ){
         return result;
 }
 
+int ds_collection_append( ds18b20_collection_t* ds_collect, ds18b20_t* ds ){
+        
+        //Realloc, +1 extra array slot
+        size_t mem_size = 0;
+        ds_collect->count++;
+        mem_size = sizeof( ds18b20_t ) * ds_collect->count;
+        ds_collect->sensors = (ds18b20_t*)realloc( ds_collect->sensors, mem_size ); 
+
+        memcpy( 
+                &ds_collect->sensors[ds_collect->count-1], /*dst*/
+                ds,                                        /*src*/
+                sizeof(ds18b20_t)
+        );
+
+        /*TODO possible error checks*/
+        return 1;
+}
+
 int  init_ds18b20( ds18b20_t* ds, const char* path ){
         if( path == NULL ){
                 printerr_loc("input arg NULL\n");
@@ -123,5 +142,32 @@ int write_vtable( ds_vtable_t* vtable ){
         return 1;
 }
 
-int  init_ds18b20_collection( ds18b20_collection_t* ds_collect );
-void fini_ds18b20_collection( ds18b20_collection_t* ds_collect );
+int  init_ds18b20_collection( ds18b20_collection_t* ds_collect ){
+        memset(ds_collect, 0, sizeof( ds18b20_collection_t ) );
+        return 1;
+}
+void fini_ds18b20_collection( ds18b20_collection_t* ds_collect ){
+
+        if( ds_collect->vtable != NULL ){
+                free( ds_collect->vtable );
+        }
+
+        for( int i = 0; i < ds_collect->count; i++){
+                free( &ds_collect->sensors[i] );
+        }
+}
+
+void ds_collection_printall( ds18b20_collection_t* ds_collect){
+        if( ds_collect == NULL ){
+                printerr_loc("Input arg null");
+                return;
+        }
+
+        
+
+        for( int i = 0; i < ds_collect->count; i++){
+                printf("Path:   %s\n", ds_collect->sensors[i].path);
+                printf("Serial: %"PRIx64"\n", ds_collect->sensors[i].serial_number);
+        }
+
+}
