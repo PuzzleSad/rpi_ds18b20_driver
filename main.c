@@ -49,10 +49,11 @@ void ds_test(){
         ds18b20_t ds;
         init_ds18b20( &ds, "/sys/bus/w1/devices/28-3c01f095aa1f" );
 
-        // printf("Path: %s\n", ds.path );
-        // printf("Serial: %lx\n", ds.serial_number );
+        printf("xPath: %s\n", ds.path );
+        printf("xSerial: %lx\n", ds.serial_number );
 
         
+
 
         ds18b20_collection_t ds_collect;
         init_ds18b20_collection( &ds_collect );
@@ -60,8 +61,13 @@ void ds_test(){
         ds_collection_append( &ds_collect, &ds );
         ds_collection_printall( &ds_collect );
 
+
+        printf("splice: %s\n", ds_splice_path( ds.path, "lmao" ) );
+
         fini_ds18b20( &ds );
         fini_ds18b20_collection( &ds_collect );
+
+        
         
 }
 

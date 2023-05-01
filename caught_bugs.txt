@@ -4,3 +4,24 @@ was previously
         Potentially an extremely dangerous bug due to malloc allocating pages of 
         memory. The program does not yield a segfault when run due to pages allocated on new alloc.
         Caught with valgrind.
+---------------------------------------------------------------
+Massive 1h deadlock was caused by an include error 
+Throwing includes as bad as 
+/usr/include/aarch64-linux-gnu/bits/stdint-intn.h:24:18: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘int8_t’
+
+the believed cause was a simple
+struct abcd{
+
+}   <---- missing closing semicolon
+-----------------------------------------------------------------
+path_len += strlen(ds_path);
+path_slash_check = path_len;
+path_len = strlen(file);
+
+This resulted in a rare "Bus error" 
+basically, you've messed up so badly that your system's telling you that that memory 
+doesnt even EXIST
+
+probably something to do with the strcat that came later that might've overwritten
+the return address in the machine code.
+

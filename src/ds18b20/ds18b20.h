@@ -48,7 +48,8 @@ typedef struct ds_readings_t{
 }ds_readings_t;
 
 
-int32_t ds_get_reading( ds18b20_collection_t* ds_collect, int sensor_num );
+int32_t ds_collect_get_reading( ds18b20_collection_t* ds_collect, int sensor_num );
+int32_t ds_get_reading( ds18b20_t* ds );
 uint64_t ds_get_serial( const char* path );
 
 int  init_ds18b20( ds18b20_t* ds, const char* path );
@@ -65,6 +66,7 @@ int ds_collection_append( ds18b20_collection_t* ds_collect, ds18b20_t* ds ); //d
 
 string_array_t* ds_possible_sensors(char* search_path); //dir in which it should search
 
+char* ds_splice_path(const char* ds_path, const char* file);    //remember to free this
 
 /* More debugging/programming focused functions*/
 void ds_collection_printall( ds18b20_collection_t* ds_collect);      //stdout

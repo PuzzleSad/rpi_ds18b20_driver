@@ -2,6 +2,7 @@
 #include "../../utils/usefuldefines.h"
 #include "../../utils/str_utils.h"
 #include "../../utils/utils.h"
+#include "ds_readtimer.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,9 +16,20 @@
 do{\
         if( !step_validatepath(path) ){\
                 printerr_loc("ds18 path not valid\n");\
+                fprintf(stderr, "\033[95mpath: %s\n\033[0m", path);\
                 return 0;\
         }\
 }while(0);
+
+#define PATH_VERIFY_FLAG(path, x)\
+do{\
+        if( !step_validatepath(path) ){\
+                printerr_loc("ds18 path not valid\n");\
+                fprintf(stderr, "\033[95mpath: %s\n\033[0m", path);\
+                x = 1;\
+        }\
+}while(0);
+
 
 #else
 
@@ -38,43 +50,51 @@ do{\
 
 
 
-int32_t ds_get_reading( ds18b20_collection_t* ds_collect, int sensor_num ){
+int32_t ds_collect_get_reading( ds18b20_collection_t* ds_collect, int sensor_num ){
+        ds_read_time_t timer;
 
-        
+
+
 
 
         return 0;
 
 }
 
+int32_t ds_get_reading( ds18b20_t* ds ){
+        FILE* fp;
+        PATH_VERIFY(ds->path);
+        fp = fopen( ds->path, "r" );
+
+        if(fp == NULL){
+                printerr_loc("Error accessing ds\n");
+                return 0;
+        }
+
+        
+
+        fclose(fp);
+}
+
 uint64_t ds_get_serial( const char* path ){
 
         uint64_t serial;
-        char append[4] = "/id\0";
-        size_t path_len = 0;
-        size_t path_slash_check = 0;
+        int status = 0;
+        char* read_path;
+        read_path = ds_splice_path(path, "id");
 
-        path_len += strlen(path);
-        path_slash_check = path_len;
-        path_len += strlen(append);
 
-        char read_path[path_len +1];
-        memset( read_path, 0, path_len +1);
-
-        strcpy( read_path, path );
-
-        if( read_path[path_slash_check-1] == '/' ){
-                read_path[path_slash_check-1] = '\0';
+        PATH_VERIFY_FLAG(read_path, status); //ret 1 if fail
+        if(status){
+                free(read_path);
+                return 0;
         }
-
-        strcat( read_path, append );
-
-        PATH_VERIFY(read_path); //ret 0 if fail
-
+        
 
         FILE *fp = fopen( read_path, "r" );
         if( fp == NULL ){
                 printerr_loc("File open failed\n");
+                free(read_path);
                 return 0;
         }
 
@@ -87,8 +107,12 @@ uint64_t ds_get_serial( const char* path ){
 
         /* TODO insert a CRC check here */
 
+
+        free(read_path);
         return result;
 }
+
+
 
 int ds_collection_append( ds18b20_collection_t* ds_collect, ds18b20_t* ds ){
         

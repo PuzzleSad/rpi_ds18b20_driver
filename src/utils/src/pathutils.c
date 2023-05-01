@@ -71,7 +71,8 @@ int step_validatepath(const char* path){
 
 int validate_path( const char* path, int flags ){ //100 R, 010 W, 001 X
         if( access( path, F_OK) != 0 ){
-                fprintf(stderr, "Error, file does not exist\nPath: %s\n", path);
+                printerr_loc("Error, file does not exist\n");
+                fprintf(stderr, "\033[91mPath: %s\n\033[0m", path);
                 return 0;
         }
 
